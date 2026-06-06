@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:3000
+# @jwtToken = {{authLogin.response.body.accessToken}}
+
+# @postUuid = {{createPostOwned.response.body.id}}
+# @postSlug = {{createPostOwned.response.body.slug}}
+# @imagePath = {{uploadImage.response.body.url}}
+# @imageUrl = {{baseUrl}}{{imagePath}}
+
+GET {{baseUrl}}
+
+### Auth login
+# @name authLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@email.com",
+  "password": "123",
+  "chave-malvada": ""
+}
+
+### Read One User
+GET {{baseUrl}}/user/abcd

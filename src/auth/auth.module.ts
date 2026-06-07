@@ -3,7 +3,8 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from 'src/user/user.module';
 import { CommonModule } from 'src/common/common.module';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -18,18 +19,17 @@ import { JwtModule } from '@nestjs/jwt';
             'JWT_SECRET not found in .env',
           );
         }
-
         return {
           secret,
           signOptions: {
-            expiresIn: parseInt(process.env.JWT_EXPIRATION || '1m', 10),
+            expiresIn: process.env.JWT_EXPIRATION || '1D',
           },
         };
       },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
   exports: [],
 })
 export class AuthModule {}

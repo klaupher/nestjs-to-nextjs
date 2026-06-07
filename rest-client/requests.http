@@ -14,10 +14,19 @@ POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@email.com",
-  "password": "123",
-  "chave-malvada": ""
+  "email": "fernanda@email.com",
+  "password": "123456"
 }
 
 ### Read One User
 GET {{baseUrl}}/user/abcd
+
+### Create user
+POST {{baseUrl}}/user
+Content-Type: application/json
+
+{
+  "name": "Fernanda Bernardes",
+  "email": "fernanda1@email.com",
+  "password": "123456"
+}

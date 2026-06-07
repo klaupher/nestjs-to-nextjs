@@ -1,11 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/log.dto';
+import { UserService } from 'src/user/user.service';
+import { HashingService } from 'src/common/hashing/hashing.service';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './types/jwt-payload.type';
 
 @Injectable()
 export class AuthService {
-  getLogin(loginDto: LoginDto) {
-    console.log(loginDto.email);
-    console.log(loginDto.password);
-    return loginDto;
+  constructor(
+    private readonly userService: UserService,
+    private readonly hashingService: HashingService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async doLogin(loginDto: LoginDto) {
+    const user = await this.userService.findByEmail(loginDto.email!);
+    const error = new UnauthorizedException('Usuário ou senha inválida');
+    if (!user) {
+      throw error;
+    }
+
+    const isPasswordValid = await this.hashingService.compare(
+      loginDto.password!,
+      user.password,
+    );
+    if (!isPasswordValid) {
+      throw error;
+    }
+
+    const jwtPayload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+    };
+    const accessToken = await this.jwtService.signAsync(jwtPayload);
+    return { accessToken };
   }
 }

@@ -1,7 +1,8 @@
 {
   "window.zoomLevel": 0,
   "breadcrumbs.enabled": false,
-  "editor.fontSize": 14,
+  "editor.fontSize": 12,
+  "editor.comments.insertSpace": true,
   "debug.console.fontSize": 11,
   "terminal.integrated.fontSize": 12,
   "editor.glyphMargin": false,

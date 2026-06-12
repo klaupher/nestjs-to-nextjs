@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PostModule } from './post/post.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtModule } from '@nestjs/jwt';
+import { UploadModule } from './upload/upload.module';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -16,14 +17,25 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 5000, // limite em mili-segundos - nessa caso 5 segundo
+          limit: 10, // qtde de requisições / ttl
+          blockDuration: 6000, // bloqueio qdo estoura o ttl
+        },
+      ],
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
+        const syncronizer = process.env.DB_SYNCHRONIZE === '1';
+        const autoLoader = process.env.DB_AUTO_LOAD_ENTITIES === '1';
         if (process.env.DB_TYPE === 'better-sqlite3') {
           return {
             type: 'better-sqlite3',
             database: process.env.DB_DATABASE || './db.sqlite',
-            synchronize: process.env.DB_SYNCHRONIZE === '1',
-            autoLoadEntities: process.env.DB_AUTO_LOAD_ENTITIES === '1',
+            synchronize: syncronizer,
+            autoLoadEntities: autoLoader,
             logger: 'debug',
           };
         }
@@ -40,8 +52,18 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
+    UploadModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

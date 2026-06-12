@@ -28,4 +28,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  // @OneToMany(() => Post)
+  // posts!: Post[]
 }

@@ -1,10 +1,10 @@
 import { InternalServerErrorException, Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UserModule } from 'src/user/user.module';
-import { CommonModule } from 'src/common/common.module';
-import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { CommonModule } from '../common/common.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { JwtStrategy } from './jwt.strategy';
         return {
           secret,
           signOptions: {
-            expiresIn: process.env.JWT_EXPIRATION || '1D',
+            expiresIn: '30m',
           },
         };
       },

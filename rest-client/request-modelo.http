@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:3001
 @jwtToken = {{authLogin.response.body.accessToken}}
 
 @postUuid = {{createPostOwned.response.body.id}}
@@ -6,12 +6,12 @@
 @imagePath = {{uploadImage.response.body.url}}
 @imageUrl = {{baseUrl}}{{imagePath}}
 
-@userNameForTesting = Maria
-@userEmailForTesting = maria@email.com
+@userNameForTesting = Luiz
+@userEmailForTesting = luiz@email.com
 @userPasswordForTesting = 123456
 @userNewPasswordForTesting = 123456
 
-GET {{baseUrl}}
+# AUTH ########################################################################
 
 ### Auth login
 # @name authLogin
@@ -23,10 +23,7 @@ Content-Type: application/json
   "password": "{{userPasswordForTesting}}"
 }
 
-### Dados Usuario Logado
-# @name userLogged
-GET {{baseUrl}}/user/me/
-Authorization: Bearer {{jwtToken}}
+# USER ########################################################################
 
 ### Create user
 # @name createUser
@@ -46,11 +43,11 @@ Content-Type: application/json
 Authorization: Bearer {{jwtToken}}
 
 {
-  "name": "Joao Pedro",
-  "email": "joao@email.com"
+  "name": "{{userNameForTesting}} Otávio",
+  "email": "{{userEmailForTesting}}"
 }
 
-### Update user passowrd
+### Update user password
 # @name updateUserPassword
 PATCH {{baseUrl}}/user/me/password
 Content-Type: application/json
@@ -61,12 +58,17 @@ Authorization: Bearer {{jwtToken}}
   "newPassword": "{{userNewPasswordForTesting}}"
 }
 
-### Delete User
-# @name userDelete
+### Read one user
+# @name readOneUser
+GET {{baseUrl}}/user/me
+Authorization: Bearer {{jwtToken}}
+
+### Delete one user
+# @name deleteOneUser
 DELETE {{baseUrl}}/user/me
 Authorization: Bearer {{jwtToken}}
 
-#  POST @@@@@@@@@@@@@@@@@@@
+# POST ########################################################################
 
 ### Create post owned
 # @name createPostOwned
@@ -75,12 +77,11 @@ Content-Type: application/json
 Authorization: Bearer {{jwtToken}}
 
 {
-  "title": "Novo Post Published",
+  "title": "Título do post",
   "excerpt": "Excerto do post",
   "content": "Conteúdo",
   "coverImageUrl": "http://localhost"
 }
-
 
 ### Read all post public
 # @name readAllPostPublic
@@ -130,7 +131,7 @@ Content-Type: multipart/form-data; boundary=----BryenFormBoundary
 Content-Disposition: form-data; name="file"; filename="image.png"
 Content-Type: image/png
 
-< ../dev/images/image.png
+< ../dev/images/image.gif
 ------BryenFormBoundary--
 
 ### Read Image
